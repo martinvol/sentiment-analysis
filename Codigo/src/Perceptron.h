@@ -25,7 +25,7 @@ public:
 
 	void Entrenar();
 	std::vector< std::vector<double> > Predicciones();
-	void Agregar(int tag,int& errores,std::vector<unsigned long>& features);
+	void Agregar(int tag,int *errores,std::vector<unsigned long>& features);
 	double Clasificar(std::vector<unsigned long>& features);
 };
 
