@@ -10,6 +10,15 @@ bool check_positive_negative(review, data){
     return 1 if total/float(len(review.split())) >= 0.5 else 0
 }*/
 
+
+Bayes::Bayes(){
+
+}
+
+Bayes::~Bayes(){
+	
+}
+
 void Bayes::entrenar(int tag, std::vector<std::string*>* oracion){
 	std::string* palabra;
 	
