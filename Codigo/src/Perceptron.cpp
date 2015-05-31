@@ -51,7 +51,7 @@ std::vector< std::vector<double> > Perceptron::Predicciones(){
 	return predicciones;
 }
 
-double Perceptron::Clasificar(std::vector<unsigned long>& features) {
+double Perceptron::Clasificar(std::vector<unsigned long> &features) {
 	double activacion;
 
 	for (std::vector<unsigned long>::iterator it = features.begin(); it !=features.end(); ++it){
@@ -61,14 +61,14 @@ double Perceptron::Clasificar(std::vector<unsigned long>& features) {
 	return activacion;
 }
 
-void Perceptron::Agregar(int tag, int& errores, std::vector<unsigned long>& features) {
+void Perceptron::Agregar(int tag, int* errores, std::vector<unsigned long>& features) {
 	double activacion;
 
 	for (std::vector<unsigned long>::iterator it = features.begin(); it !=features.end(); ++it){
 		activacion += pesos[*it];
 	}
 	if (activacion * tag <= 0){ // Esto significa que clasifico erroneamente
-		errores++;
+		(*errores)++;
 		// updateo los pesos utilizados
 		for (std::vector<unsigned long>::iterator iter = features.begin(); iter !=features.end(); ++iter){
 			pesos[*iter] += (tag);
