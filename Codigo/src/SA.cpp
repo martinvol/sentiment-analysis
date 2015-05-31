@@ -32,7 +32,7 @@ int main() {
     	std::size_t str_hash = hash_fn(*iter);
 
     	hash_palabras.push_back(str_hash);
-        // std::cout<<str_hash<<'\n';
+  
     }
 
     return 0;
