@@ -29,3 +29,5 @@
 
 # Python
 *.pyc
+
+Makefile
