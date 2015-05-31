@@ -58,7 +58,7 @@ void Perceptron::Entrenar(){
 				std::tr1::hash<std::string> hash_fn;
 				std::size_t str_hash = hash_fn(*iter);
 				hash_palabras.push_back(str_hash);
-				std::cout << str_hash << std::endl;
+				cout << str_hash << std::endl;
 			}
 
 			Perceptron::Agregar(tag,&errores,hash_palabras);

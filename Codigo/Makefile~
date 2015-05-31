@@ -7,14 +7,14 @@ BOSTFLAGS =  -lboost_system -lboost_regex
 
 
 main.o: src/SA.cpp
-	$(CC) "src/SA.cpp" -c $(CFLAGS)
+	$(CC) "src/SA.cpp" -c
 
 
 Perceptron.o: src/Perceptron.cpp src/Perceptron.h
-	$(CC) "src/Perceptron.cpp" -c $(CFLAGS)
+	$(CC) "src/Perceptron.cpp" -c
 
 Bayes.o: src/Bayes.cpp src/Bayes.h
-	$(CC) "src/Bayes.cpp" -c $(CFLAGS)
+	$(CC) "src/Bayes.cpp" -c
 
 
 compilar: Perceptron.o main.o Bayes.o

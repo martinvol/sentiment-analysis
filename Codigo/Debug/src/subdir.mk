@@ -4,14 +4,17 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
+../src/Bayes.cpp \
 ../src/Perceptron.cpp \
 ../src/SA.cpp 
 
 OBJS += \
+./src/Bayes.o \
 ./src/Perceptron.o \
 ./src/SA.o 
 
 CPP_DEPS += \
+./src/Bayes.d \
 ./src/Perceptron.d \
 ./src/SA.d 
 
