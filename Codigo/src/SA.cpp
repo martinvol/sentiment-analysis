@@ -11,6 +11,7 @@
 #include <boost/regex.hpp>
 #include <string>
 #include <tr1/functional>
+#include "Bayes.h"
 
 
 int main() {
@@ -33,8 +34,11 @@ int main() {
     	hash_palabras.push_back(str_hash);
   
     }
+
 	*/
-	
-	return 0; 
+
+    Bayes miBayes;
+
+    return 0;
 
 }
