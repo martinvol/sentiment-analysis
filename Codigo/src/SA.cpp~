@@ -34,15 +34,21 @@ int main() {
     	hash_palabras.push_back(str_hash);
   
     }
-<<<<<<< HEAD
+
 	*/
 	
-	return 0; 
-=======
 
-    Bayes miBayes;
 
-    return 0;
->>>>>>> 953cb9f3e8297611c7926e93542812f46e363f3a
+	int dimension = 20000;
+	int rate = 1;
+	int pasadas = 1;
+	int errores = 10;
+	Perceptron miPerceptron(dimension, rate, pasadas, errores);
+	miPerceptron.Entrenar();
+
+	Bayes miBayes;
+
+
+	return 0;
 
 }

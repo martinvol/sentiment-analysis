@@ -36,9 +36,19 @@ int main() {
     }
 
 	*/
+	
 
-    Bayes miBayes;
 
-    return 0;
+	int dimension = 20000;
+	int rate = 1;
+	int pasadas = 2;
+	int errores = 10;
+	Perceptron miPerceptron(dimension, rate, pasadas, errores);
+	miPerceptron.Entrenar();
+
+	Bayes miBayes;
+
+
+	return 0;
 
 }

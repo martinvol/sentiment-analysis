@@ -32,13 +32,18 @@ void Perceptron::Entrenar(){
 
 	//Iteraciones de entrenamiento
 	for (int i = 0; i <= pasadas; i++ ){
+		fprintf(stderr,"hola1 \n");
 		int errores = 0;
 		typedef std::vector<std::vector<std::string> > Rows;
 		Rows rows;
-		std::ifstream input("../Data/labeledTrainData.tsv");
+		std::ifstream input("./labeledTrainData.tsv");
+		if (!input) {
+			std::cout << "unable to load file" << std::endl;
+		}
 		char const row_delim = '\n';
 		char const field_delim = '\t';
 		for (std::string row; getline(input, row, row_delim); ) {
+			fprintf(stderr,"hola2 \n");
 			rows.push_back(Rows::value_type());
 			std::istringstream ss(row);
 			for (std::string field; getline(ss, field, field_delim); ) {
@@ -46,6 +51,7 @@ void Perceptron::Entrenar(){
 			}
 		}
 		for (std::vector<std::vector<std::string> >::iterator it = rows.begin(); it !=rows.end(); ++it){
+			fprintf(stderr,"hola3 \n");
 			int tag = std::stoi((*it)[0]);
 			std::string text = (*it)[2];
 		
@@ -55,10 +61,11 @@ void Perceptron::Entrenar(){
 			std::vector<std::size_t> hash_palabras; 
 
 			for( ; iter != end; ++iter ) {
+				printf("hola3 \n");
 				std::tr1::hash<std::string> hash_fn;
 				std::size_t str_hash = hash_fn(*iter);
 				hash_palabras.push_back(str_hash);
-				cout << str_hash << std::endl;
+				std::cout << str_hash << std::endl;
 			}
 
 			Perceptron::Agregar(tag,&errores,hash_palabras);
