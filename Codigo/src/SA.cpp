@@ -6,13 +6,15 @@
 // Description : Hello World in C++, Ansi-style
 //============================================================================
 
-#include <iostream>
 #include "Perceptron.h"
 #include <boost/regex.hpp>
 #include <string>
+#include <iostream>
+#include <sstream>
+#include <fstream>
 #include <tr1/functional>
 #include "Bayes.h"
-
+#include <cmath>
 
 int main() {
 
@@ -39,12 +41,30 @@ int main() {
 	
 
 
-	int dimension = 20000;
-	int rate = 1;
-	int pasadas = 2;
-	int errores = 10;
+	int dimension = pow(2,25);
+	float rate = 0.2;
+	int pasadas = 100;
+	int errores = 0;
 	Perceptron miPerceptron(dimension, rate, pasadas, errores);
 	miPerceptron.Entrenar();
+	
+	std::vector<double> preds = miPerceptron.Predicciones();
+	std::ofstream myfile ("submission.csv", std::ofstream::trunc);
+	if (!myfile) {
+		fprintf(stderr,"error al abrir \n");
+	}
+
+	myfile << "\"id\",\"sentiment\"";
+	myfile << "\n";
+	std::vector<std::string> ids = miPerceptron.ObtenerIds();
+	for (int i = 0; i < 25000; i++){
+		myfile << ids[i];
+		myfile << ",";
+		myfile << preds[i];
+		myfile << "\n";
+	}
+
+	myfile.close();
 
 	Bayes miBayes;
 

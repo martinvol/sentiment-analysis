@@ -12,6 +12,9 @@
 #include <fstream>
 #include <boost/regex.hpp>
 #include <tr1/functional>
+#include <math.h>
+
+typedef std::vector<std::vector<std::string> > Rows;
 
 Perceptron::Perceptron(int dimension, int learning_rate, int numero_pasadas, int nro_errores) {
 	pesos.resize(dimension);
@@ -32,18 +35,18 @@ void Perceptron::Entrenar(){
 
 	//Iteraciones de entrenamiento
 	for (int i = 0; i <= pasadas; i++ ){
-		fprintf(stderr,"hola1 \n");
 		int errores = 0;
-		typedef std::vector<std::vector<std::string> > Rows;
+		// typedef std::vector<std::vector<std::string> > Rows;
 		Rows rows;
-		std::ifstream input("./labeledTrainData.tsv");
+		std::ifstream input("labeledTrainData.tsv");
 		if (!input) {
 			std::cout << "unable to load file" << std::endl;
 		}
 		char const row_delim = '\n';
 		char const field_delim = '\t';
+		std::string firstrow;
+		getline(input, firstrow, row_delim);
 		for (std::string row; getline(input, row, row_delim); ) {
-			fprintf(stderr,"hola2 \n");
 			rows.push_back(Rows::value_type());
 			std::istringstream ss(row);
 			for (std::string field; getline(ss, field, field_delim); ) {
@@ -51,8 +54,10 @@ void Perceptron::Entrenar(){
 			}
 		}
 		for (std::vector<std::vector<std::string> >::iterator it = rows.begin(); it !=rows.end(); ++it){
-			fprintf(stderr,"hola3 \n");
-			int tag = std::stoi((*it)[0]);
+			// fprintf(stderr,"hola2 \n");
+			// fprintf(stderr,"%s",(*it)[1].c_str());
+			// fprintf(stderr,"\n");
+			int tag = std::stoi((*it)[1]);
 			std::string text = (*it)[2];
 		
 			boost::regex regex("\\w+");
@@ -61,11 +66,11 @@ void Perceptron::Entrenar(){
 			std::vector<std::size_t> hash_palabras; 
 
 			for( ; iter != end; ++iter ) {
-				printf("hola3 \n");
+				// printf("hola3 \n");
 				std::tr1::hash<std::string> hash_fn;
 				std::size_t str_hash = hash_fn(*iter);
-				hash_palabras.push_back(str_hash);
-				std::cout << str_hash << std::endl;
+				hash_palabras.push_back(str_hash%dimensiones);
+				// std::cout << str_hash << std::endl;
 			}
 
 			Perceptron::Agregar(tag,&errores,hash_palabras);
@@ -78,15 +83,51 @@ void Perceptron::Entrenar(){
 	}
 }
 
-std::vector< std::vector<double> > Perceptron::Predicciones(){
-	std::vector< std::vector<double> > predicciones;
-	// for each feature vector
-		std::vector<unsigned long> feat_vect; // TODO, para que compile
-		std::vector<double> pred;
-		pred.push_back(Perceptron::Clasificar(feat_vect));
-		predicciones.push_back(pred);
+std::vector<double>Perceptron::Predicciones(){
+	// std::vector< std::vector<double> > predicciones;
 
-	return predicciones;
+	// typedef std::vector<std::vector<std::string> > Rows;
+	Rows rows;
+	std::ifstream input("testData.tsv");
+	if (!input) {
+		std::cout << "unable to load file" << std::endl;
+	}
+	char const row_delim = '\n';
+	char const field_delim = '\t';
+	std::string firstrow;
+	getline(input, firstrow, row_delim);
+	for (std::string row; getline(input, row, row_delim); ) {
+		rows.push_back(Rows::value_type());
+		std::istringstream ss(row);
+		for (std::string field; getline(ss, field, field_delim); ) {
+			rows.back().push_back(field);
+		}
+	}
+	std::vector<double> pred;
+	for (std::vector<std::vector<std::string> >::iterator it = rows.begin(); it !=rows.end(); ++it){
+		// fprintf(stderr,"hola2 \n");
+		// fprintf(stderr,"%s",(*it)[1].c_str());
+		// fprintf(stderr,"\n");
+		std::string text = (*it)[1];
+	
+		boost::regex regex("\\w+");
+		boost::sregex_token_iterator iter(text.begin(), text.end(), regex, 0);
+		boost::sregex_token_iterator end;
+		std::vector<std::size_t> hash_palabras; 
+
+		for( ; iter != end; ++iter ) {
+			// printf("hola3 \n");
+			std::tr1::hash<std::string> hash_fn;
+			std::size_t str_hash = hash_fn(*iter);
+			hash_palabras.push_back(str_hash%dimensiones);
+			// std::cout << str_hash << std::endl;
+		}
+
+		pred.push_back(Perceptron::Clasificar(hash_palabras));
+		// predicciones.push_back(pred);
+	}	
+
+	return pred; // cambiar luego a predicciones
 }
 
 double Perceptron::Clasificar(std::vector<unsigned long> &features) {

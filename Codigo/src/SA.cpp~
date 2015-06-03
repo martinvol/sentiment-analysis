@@ -12,6 +12,7 @@
 #include <string>
 #include <tr1/functional>
 #include "Bayes.h"
+#include <tr1/functional>
 
 
 int main() {
@@ -41,10 +42,12 @@ int main() {
 
 	int dimension = 20000;
 	int rate = 1;
-	int pasadas = 1;
+	int pasadas = 2;
 	int errores = 10;
 	Perceptron miPerceptron(dimension, rate, pasadas, errores);
 	miPerceptron.Entrenar();
+	std::vector<double> preds = miPerceptron.Predicciones();
+	for (int i=0; i<=10;i++) printf("%f\n",preds[i]);
 
 	Bayes miBayes;
 
