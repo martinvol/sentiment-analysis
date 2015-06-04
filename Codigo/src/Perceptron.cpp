@@ -75,6 +75,7 @@ void Perceptron::Entrenar(){
 			//hay overfit, frenamos
 			break;
 		}
+		input.close();
 	}
 }
 
@@ -97,6 +98,9 @@ std::vector<double>Perceptron::Predicciones(){
 			rows.back().push_back(field);
 		}
 	}
+
+	// TODO cerrar el input file????
+
 	double max = 0;
 	double min = 1;
 	std::vector<double> pred;
@@ -123,12 +127,14 @@ std::vector<double>Perceptron::Predicciones(){
 		double proba = Perceptron::Clasificar(hash_palabras);
 		if (proba > max) max = proba;
 		if (proba < min) min = proba;
-		double res = (proba - min) / (max - min);
-		pred.push_back(res);
+		pred.push_back(proba);
 		// predicciones.push_back(pred);
-	}	
-
-	return pred; // cambiar luego a predicciones
+	}
+	for (std::vector<double >::iterator it = pred.begin(); it !=pred.end(); ++it){
+		(*it) = (((*it) - min) / (max - min));
+	}
+	input.close();
+	return pred;
 }
 
 std::vector<std::string> Perceptron::ObtenerIds(){

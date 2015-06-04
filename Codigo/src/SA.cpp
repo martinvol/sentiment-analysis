@@ -41,7 +41,8 @@ int main() {
 	
 
 
-	int dimension = pow(2,25);
+	int dimension = pow(2,29);
+	fprintf(stderr,"%d",dimension);
 	float rate = 0.2;
 	int pasadas = 100;
 	int errores = 0;
