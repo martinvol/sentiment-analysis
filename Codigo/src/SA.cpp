@@ -52,7 +52,7 @@ int main() {
 
 	int dimension = pow(2,25);
 	float rate = 0.2;
-	int pasadas = 2;
+	int pasadas = 100;
 	int errores = 0;
 	Perceptron miPerceptron(dimension, rate, pasadas, errores);
 	miPerceptron.Entrenar();

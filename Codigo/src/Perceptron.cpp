@@ -11,7 +11,9 @@
 #include <sstream>
 #include <fstream>
 #include <boost/regex.hpp>
+#include <boost/algorithm/string.hpp>
 #include <tr1/functional>
+#include <locale>         // std::locale, std::tolower
 #include <math.h>
 #include <cmath> 
 
@@ -73,7 +75,10 @@ void Perceptron::Entrenar(){
 			}else {
 				for( ; iter != end; ++iter ) {
 					std::tr1::hash<std::string> hash_fn;
-					std::size_t str_hash = hash_fn(*iter);
+					/*std::transform((*iter).begin(), (*iter).end(), (*iter).begin(), ::tolower);*/
+					std::string temp(*iter);
+					std::transform(temp.begin(), temp.end(), temp.begin(), ::tolower);
+					std::size_t str_hash = hash_fn(temp);
 					hash_palabras.push_back(str_hash%dimensiones);
 				}
 			}
@@ -125,7 +130,10 @@ std::vector<long double>Perceptron::Predicciones(){
 
 		for( ; iter != end; ++iter ) {
 			std::tr1::hash<std::string> hash_fn;
-			std::size_t str_hash = hash_fn(*iter);
+			//boost::algorithm::to_lower(*iter);
+			std::string temp(*iter);
+			std::transform(temp.begin(), temp.end(), temp.begin(), ::tolower);
+			std::size_t str_hash = hash_fn(temp);
 			hash_palabras.push_back(str_hash%dimensiones);
 			// std::cout << str_hash << std::endl;
 		}
