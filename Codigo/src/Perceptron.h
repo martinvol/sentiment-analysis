@@ -12,7 +12,7 @@
 
 class Perceptron {
 private:
-	std::vector<double> pesos;
+	std::vector<long double> pesos;
 	std::vector<std::string> ids;
 	int dimensiones;
 	float rate;
@@ -25,11 +25,11 @@ public:
 	virtual ~Perceptron();
 
 	void Entrenar();
-	// std::vector< std::vector<double> > Predicciones();
-	double Sigmoid(double activacion);
-	std::vector<double> Predicciones();
+	// std::vector< std::vector<long double> > Predicciones();
+	long double Sigmoid(long double activacion);
+	std::vector<long double> Predicciones();
 	void Agregar(int tag,int *errores,std::vector<unsigned long>& features);
-	double Clasificar(std::vector<unsigned long>& features);
+	long double Clasificar(std::vector<unsigned long>& features);
 	std::vector<std::string> ObtenerIds();
 };
 
