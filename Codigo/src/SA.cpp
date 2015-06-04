@@ -15,6 +15,8 @@
 #include <tr1/functional>
 #include "Bayes.h"
 #include <cmath>
+#include <iomanip>
+#include <limits>
 
 int main() {
 
@@ -39,16 +41,23 @@ int main() {
 
 	*/
 	
+    /*long long double a = 1;
+    long long double b = 3;*/
+	std::cout.precision(190);
+
+	//printf("%f\n", a/b);
+	//printf("%lu\n", sizeof(a));
+	//std::cout << a/b << std::endl;
 
 
 	int dimension = pow(2,25);
 	float rate = 0.2;
-	int pasadas = 100;
+	int pasadas = 2;
 	int errores = 0;
 	Perceptron miPerceptron(dimension, rate, pasadas, errores);
 	miPerceptron.Entrenar();
 	
-	std::vector<double> preds = miPerceptron.Predicciones();
+	std::vector<long double> preds = miPerceptron.Predicciones();
 	std::ofstream myfile ("submission.csv", std::ofstream::trunc);
 	if (!myfile) {
 		fprintf(stderr,"error al abrir \n");
@@ -60,8 +69,9 @@ int main() {
 	for (int i = 0; i < 25000; i++){
 		myfile << ids[i];
 		myfile << ",";
-		myfile << preds[i];
+		myfile << std::fixed << std::setprecision(53) << preds[i];
 		myfile << "\n";
+		//std::cout << std::fixed << std::cout.precision(190) << preds[i] << std::endl;
 	}
 
 	myfile.close();

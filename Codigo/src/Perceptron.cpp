@@ -15,6 +15,8 @@
 #include <math.h>
 #include <cmath> 
 
+#define BIGRAMS false
+
 typedef std::vector<std::vector<std::string> > Rows;
 
 Perceptron::Perceptron(int dimension, float learning_rate, int numero_pasadas, int nro_errores) {
@@ -62,12 +64,19 @@ void Perceptron::Entrenar(){
 			boost::sregex_token_iterator end;
 			std::vector<std::size_t> hash_palabras; 
 
-			for( ; iter != end; ++iter ) {
-				std::tr1::hash<std::string> hash_fn;
-				std::size_t str_hash = hash_fn(*iter);
-				hash_palabras.push_back(str_hash%dimensiones);
+			if (BIGRAMS){
+				/*for( ; iter != end; ++iter ) {
+					std::tr1::hash<std::string> hash_fn;
+					std::size_t str_hash = hash_fn(*iter);
+					hash_palabras.push_back(str_hash%dimensiones);
+				}*/
+			}else {
+				for( ; iter != end; ++iter ) {
+					std::tr1::hash<std::string> hash_fn;
+					std::size_t str_hash = hash_fn(*iter);
+					hash_palabras.push_back(str_hash%dimensiones);
+				}
 			}
-
 			Perceptron::Agregar(tag,&errores,hash_palabras);
 		}
 		fprintf(stderr,"nro de pasada: %d, cantidad de errores %d \n",i,errores);
@@ -78,8 +87,8 @@ void Perceptron::Entrenar(){
 	}
 }
 
-std::vector<double>Perceptron::Predicciones(){
-	// std::vector< std::vector<double> > predicciones;
+std::vector<long double>Perceptron::Predicciones(){
+	// std::vector< std::vector<long double> > predicciones;
 
 	Rows rows;
 	std::ifstream input("testData.tsv");
@@ -97,9 +106,9 @@ std::vector<double>Perceptron::Predicciones(){
 			rows.back().push_back(field);
 		}
 	}
-	double max = 0;
-	double min = 1;
-	std::vector<double> pred;
+	long double max = 0;
+	long double min = 1;
+	std::vector<long double> pred;
 	for (std::vector<std::vector<std::string> >::iterator it = rows.begin(); it !=rows.end(); ++it){
 		// fprintf(stderr,"hola2 \n");
 		// fprintf(stderr,"%s",(*it)[1].c_str());
@@ -120,10 +129,10 @@ std::vector<double>Perceptron::Predicciones(){
 			hash_palabras.push_back(str_hash%dimensiones);
 			// std::cout << str_hash << std::endl;
 		}
-		double proba = Perceptron::Clasificar(hash_palabras);
+		long double proba = Perceptron::Clasificar(hash_palabras);
 		if (proba > max) max = proba;
 		if (proba < min) min = proba;
-		double res = (proba - min) / (max - min);
+		long double res = (proba - min) / (max - min);
 		pred.push_back(res);
 		// predicciones.push_back(pred);
 	}	
@@ -135,25 +144,25 @@ std::vector<std::string> Perceptron::ObtenerIds(){
 	return ids;
 }
 
-double Perceptron::Sigmoid(double activacion){
-	double proba = 1 / (1+exp(-1*activacion));
+long double Perceptron::Sigmoid(long double activacion){
+	long double proba = 1 / (1+exp(-1*activacion));
 	return proba;
 }
 
-double Perceptron::Clasificar(std::vector<unsigned long> &features) {
-	double activacion = 0;
+long double Perceptron::Clasificar(std::vector<unsigned long> &features) {
+	long double activacion = 0;
 
 	for (std::vector<unsigned long>::iterator it = features.begin(); it !=features.end(); ++it){
 		activacion += pesos[*it];
 	}
 	// Normalizacion online ?
-	//double probabilidad = Perceptron::Sigmoid(activacion);
+	//long double probabilidad = Perceptron::Sigmoid(activacion);
 
 	return activacion;
 }
 
 void Perceptron::Agregar(int tag, int* errores, std::vector<unsigned long>& features) {
-	double activacion = 0;
+	long double activacion = 0;
 
 	for (std::vector<unsigned long>::iterator it = features.begin(); it !=features.end(); ++it){
 		activacion += pesos[*it];
