@@ -17,11 +17,9 @@
 #include <math.h>
 #include <cmath> 
 
-#define BIGRAMS false
-
 typedef std::vector<std::vector<std::string> > Rows;
 
-Perceptron::Perceptron(int dimension, float learning_rate, int numero_pasadas, int nro_errores) {
+Perceptron::Perceptron(int dimension, float learning_rate, int numero_pasadas, int nro_errores, bool bigrams) {
 	pesos.resize(dimension);
 	std::fill(pesos.begin(), pesos.end(), 0);
 	// pesos.shrink_to_fit();
@@ -29,6 +27,7 @@ Perceptron::Perceptron(int dimension, float learning_rate, int numero_pasadas, i
 	rate = learning_rate;
 	pasadas = numero_pasadas;
 	tolerancia = nro_errores;
+	bigramas = bigrams;
 
 }
 
@@ -66,22 +65,31 @@ void Perceptron::Entrenar(){
 			boost::sregex_token_iterator end;
 			std::vector<std::size_t> hash_palabras; 
 
-			if (BIGRAMS){
-				/*for( ; iter != end; ++iter ) {
-					std::tr1::hash<std::string> hash_fn;
-					std::size_t str_hash = hash_fn(*iter);
-					hash_palabras.push_back(str_hash%dimensiones);
-				}*/
-			}else {
-				for( ; iter != end; ++iter ) {
-					std::tr1::hash<std::string> hash_fn;
-					/*std::transform((*iter).begin(), (*iter).end(), (*iter).begin(), ::tolower);*/
-					std::string temp(*iter);
-					std::transform(temp.begin(), temp.end(), temp.begin(), ::tolower);
-					std::size_t str_hash = hash_fn(temp);
-					hash_palabras.push_back(str_hash%dimensiones);
+			// Tengo que hacer la iteracion una vez antes del for:
+			std::tr1::hash<std::string> hash_fn;
+			std::string pal_ant(*iter);
+			std::transform(pal_ant.begin(), pal_ant.end(), pal_ant.begin(), ::tolower);
+			std::size_t str_hash = hash_fn(pal_ant);
+			hash_palabras.push_back(str_hash % dimensiones);
+			++iter;
+
+			for( ; iter != end; ++iter ) {
+				std::tr1::hash<std::string> hash_fn;
+				/*std::transform((*iter).begin(), (*iter).end(), (*iter).begin(), ::tolower);*/
+				std::string temp(*iter);
+				std::transform(temp.begin(), temp.end(), temp.begin(), ::tolower);
+				std::size_t str_hash = hash_fn(temp);
+				hash_palabras.push_back(str_hash % dimensiones);
+				if (bigramas){
+					std::string gram(pal_ant + " " + temp);
+					// printf("Bigrama %s", gram.c_str());
+					std::transform(gram.begin(), gram.end(), gram.begin(), ::tolower);
+					std::size_t gram_hash = hash_fn(gram);
+					hash_palabras.push_back(gram_hash % dimensiones);
+					pal_ant = temp;
 				}
 			}
+
 			Perceptron::Agregar(tag,&errores,hash_palabras);
 		}
 		fprintf(stderr,"nro de pasada: %d, cantidad de errores %d \n",i,errores);
@@ -117,9 +125,6 @@ std::vector<long double>Perceptron::Predicciones(){
 	long double min = 1;
 	std::vector<long double> pred;
 	for (std::vector<std::vector<std::string> >::iterator it = rows.begin(); it !=rows.end(); ++it){
-		// fprintf(stderr,"hola2 \n");
-		// fprintf(stderr,"%s",(*it)[1].c_str());
-		// fprintf(stderr,"\n");
 		std::string id = (*it)[0];
 		ids.push_back(id);
 
@@ -128,16 +133,30 @@ std::vector<long double>Perceptron::Predicciones(){
 		boost::regex regex("\\w+");
 		boost::sregex_token_iterator iter(text.begin(), text.end(), regex, 0);
 		boost::sregex_token_iterator end;
-		std::vector<std::size_t> hash_palabras; 
+		std::vector<std::size_t> hash_palabras;
+
+		// Tengo que hacer la iteracion una vez antes del for:
+		std::tr1::hash<std::string> hash_fn;
+		std::string pal_ant(*iter);
+		std::transform(pal_ant.begin(), pal_ant.end(), pal_ant.begin(), ::tolower);
+		std::size_t str_hash = hash_fn(pal_ant);
+		hash_palabras.push_back(str_hash % dimensiones);
+		++iter;
 
 		for( ; iter != end; ++iter ) {
 			std::tr1::hash<std::string> hash_fn;
-			//boost::algorithm::to_lower(*iter);
 			std::string temp(*iter);
 			std::transform(temp.begin(), temp.end(), temp.begin(), ::tolower);
 			std::size_t str_hash = hash_fn(temp);
 			hash_palabras.push_back(str_hash%dimensiones);
-			// std::cout << str_hash << std::endl;
+			if (bigramas){
+				std::string gram(pal_ant + " " + temp);
+				// printf("Bigrama %s", gram.c_str());
+				std::transform(gram.begin(), gram.end(), gram.begin(), ::tolower);
+				std::size_t gram_hash = hash_fn(gram);
+				hash_palabras.push_back(gram_hash % dimensiones);
+				pal_ant = temp;
+			}
 		}
 		long double proba = Perceptron::Clasificar(hash_palabras);
 		if (proba > max) max = proba;
@@ -145,7 +164,7 @@ std::vector<long double>Perceptron::Predicciones(){
 		pred.push_back(proba);
 		// predicciones.push_back(pred);
 	}
-	for (std::vector<double >::iterator it = pred.begin(); it !=pred.end(); ++it){
+	for (std::vector<long double >::iterator it = pred.begin(); it !=pred.end(); ++it){
 		(*it) = (((*it) - min) / (max - min));
 	}
 	input.close();

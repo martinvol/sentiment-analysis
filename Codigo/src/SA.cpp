@@ -50,12 +50,13 @@ int main() {
 	//std::cout << a/b << std::endl;
 
 
-	int dimension = pow(2,29);
+	int dimension = pow(2,25);
 	fprintf(stderr,"%d",dimension);
-	float rate = 0.2;
-	int pasadas = 100;
+	float rate = 0.1;
+	int pasadas = 80;
 	int errores = 0;
-	Perceptron miPerceptron(dimension, rate, pasadas, errores);
+	bool bigramas = true;
+	Perceptron miPerceptron(dimension, rate, pasadas, errores, bigramas);
 	miPerceptron.Entrenar();
 	
 	std::vector<long double> preds = miPerceptron.Predicciones();

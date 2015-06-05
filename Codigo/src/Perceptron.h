@@ -18,10 +18,11 @@ private:
 	float rate;
 	int pasadas;
 	int tolerancia;
+	bool bigramas;
 
 
 public:
-	Perceptron(int dimension, float learning_rate, int numero_pasadas, int nro_errores);
+	Perceptron(int dimension, float learning_rate, int numero_pasadas, int nro_errores,bool bigrams);
 	virtual ~Perceptron();
 
 	void Entrenar();
