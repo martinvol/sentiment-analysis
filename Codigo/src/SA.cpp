@@ -50,7 +50,7 @@ int main() {
 	//std::cout << a/b << std::endl;
 
 
-	int dimension = pow(2,28.5);
+	int dimension = pow(2,26);
 	fprintf(stderr,"%d",dimension);
 	float rate = 0.1;
 	int pasadas = 80;

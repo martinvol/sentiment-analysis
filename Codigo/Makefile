@@ -1,4 +1,4 @@
-CFLAGS=-g -Wall -std=c++11 -pedantic 
+CFLAGS=-g -Wall -std=c++11 -pedantic -O3
 CC=g++
 VG=valgrind
 VFLAGS=--leak-check=full --show-reachable=yes
