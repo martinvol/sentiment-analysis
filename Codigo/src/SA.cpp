@@ -50,7 +50,7 @@ int main() {
 	//std::cout << a/b << std::endl;
 
 
-	int dimension = pow(2,25);
+	int dimension = pow(2,28.5);
 	fprintf(stderr,"%d",dimension);
 	float rate = 0.1;
 	int pasadas = 80;
@@ -78,7 +78,7 @@ int main() {
 
 	myfile.close();
 
-	Bayes miBayes;
+	//Bayes miBayes;
 
 
 	return 0;

@@ -18,6 +18,7 @@ with open("labeledTrainData.tsv") as data_file:
             review = line_list[2]
             review = re.sub("<.*?>", "", review)
             review = review.lower()
+            # review = review.replace('"', '')
             sentiment = int(line_list[1])
             reviews[review] = sentiment
             #sacar html
@@ -35,12 +36,16 @@ print 'terminé de cargar los datos y procesar', time.time() - tiempo_inicial
 
 def check_positive_negative(review, data):
     total = 0
+    review = re.sub("<.*?>", "", review)
+    review = review.lower()
+    # review = review.replace('"', '')
     for w in review.split():
         proba =  float(data[w][0])/(float(data[w][0]) + float(data[w][1]))
         total += proba
     return 1 if total/float(len(review.split())) >= 0.5 else 0
 
 good = bad = 0
+
 for r in reviews.keys():
     analisis =  check_positive_negative(r, words)
     if analisis == reviews[r]:

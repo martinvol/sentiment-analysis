@@ -1,6 +1,15 @@
 
 #include "Bayes.h"
-
+#include <string>
+#include <iostream>
+#include <sstream>
+#include <fstream>
+#include <boost/regex.hpp>
+#include <boost/algorithm/string.hpp>
+#include <tr1/functional>
+#include <locale>         // std::locale, std::tolower
+#include <math.h>
+#include <cmath> 
 /*
 bool check_positive_negative(review, data){
     total = 0
@@ -10,8 +19,57 @@ bool check_positive_negative(review, data){
     return 1 if total/float(len(review.split())) >= 0.5 else 0
 }*/
 
+typedef std::vector<std::vector<std::string> > Rows;
+
 
 Bayes::Bayes(){
+
+	Rows rows;
+	std::ifstream input("labeledTrainData.tsv");
+	if (!input) {
+		std::cout << "unable to load file" << std::endl;
+	}
+	char const row_delim = '\n';
+	char const field_delim = '\t';
+	std::string firstrow;
+	getline(input, firstrow, row_delim);
+	for (std::string row; getline(input, row, row_delim); ) {
+		rows.push_back(Rows::value_type());
+		std::istringstream ss(row);
+		for (std::string field; getline(ss, field, field_delim); ) {
+			rows.back().push_back(field);
+		}
+	}
+	for (std::vector<std::vector<std::string> >::iterator it = rows.begin(); it !=rows.end(); ++it){
+			int tag = std::stoi((*it)[1]);
+			std::string text = (*it)[2];
+		
+			boost::regex regex("\\w+");
+			boost::sregex_token_iterator iter(text.begin(), text.end(), regex, 0);
+			boost::sregex_token_iterator end;
+
+			// Tengo que hacer la iteracion una vez antes del for:
+			std::string pal_ant(*iter);
+			std::transform(pal_ant.begin(), pal_ant.end(), pal_ant.begin(), ::tolower);
+			// palabra está en: pal_ant
+			
+			for( ; iter != end; ++iter ) {
+				//std::tr1::hash<std::string> hash_fn;
+				/*std::transform((*iter).begin(), (*iter).end(), (*iter).begin(), ::tolower);*/
+				std::string temp(*iter);
+				std::transform(temp.begin(), temp.end(), temp.begin(), ::tolower);
+				entrenar(tag, temp);
+				//hash_palabras.push_back(str_hash % dimensiones);
+				/*if (bigramas){
+					std::string gram(pal_ant + " " + temp);
+					// printf("Bigrama %s", gram.c_str());
+					std::transform(gram.begin(), gram.end(), gram.begin(), ::tolower);
+					std::size_t gram_hash = hash_fn(gram);
+					hash_palabras.push_back(gram_hash % dimensiones);
+					pal_ant = temp;
+				}*/
+			}
+		}
 
 }
 
@@ -19,13 +77,12 @@ Bayes::~Bayes(){
 	
 }
 
-void Bayes::entrenar(int tag, std::vector<std::string*>* oracion){
+// void Bayes::entrenar(int tag, std::vector<std::string*>* oracion){
+void Bayes::entrenar(int tag, std::string word ){
 	std::string* palabra;
-	
-	for (unsigned int i = 0; i < oracion->size() ; i++){
 
 		
-		palabra = (*oracion)[i];
+		palabra = &word;
 		//std::cout << palabra << "\n";
 		
 
@@ -36,13 +93,84 @@ void Bayes::entrenar(int tag, std::vector<std::string*>* oracion){
 			
 		}
 		
-		if(tag > 0){
+		if(tag == 0){
 			(*data[*palabra])[0]++;
 		}else{
 			(*data[*palabra])[1]++;
 		}
-		
-	}
+
 }
 
 double evaluar (std::vector<std::vector<std::string*>*>* oraciones);
+
+std::vector<long double>* Bayes::Predicciones(){
+	Rows rows;
+	std::ifstream input("testData.tsv");
+	if (!input) {
+		std::cout << "unable to load file" << std::endl;
+	}
+	char const row_delim = '\n';
+	char const field_delim = '\t';
+	std::string firstrow;
+	getline(input, firstrow, row_delim);
+	for (std::string row; getline(input, row, row_delim); ) {
+		rows.push_back(Rows::value_type());
+		std::istringstream ss(row);
+		for (std::string field; getline(ss, field, field_delim); ) {
+			rows.back().push_back(field);
+		}
+	}
+	std::vector<long double>* pred = new std::vector<long double>();
+	for (std::vector<std::vector<std::string> >::iterator it = rows.begin(); it !=rows.end(); ++it){
+		std::string id = (*it)[0];
+		ids.push_back(id);
+
+		std::string text = (*it)[1];
+	
+		boost::regex regex("\\w+");
+		boost::sregex_token_iterator iter(text.begin(), text.end(), regex, 0);
+		boost::sregex_token_iterator end;
+
+		// Tengo que hacer la iteracion una vez antes del for:
+		//std::string pal_ant(*iter);
+		//std::transform(pal_ant.begin(), pal_ant.end(), pal_ant.begin(), ::tolower);
+		// palabra está en: pal_ant
+		
+		long double suma_probas = 0;
+		float cantidad_palabras = 0; // es una cantidad, pero no quiero castear después
+		for( ; iter != end; ++iter ) {
+			//std::tr1::hash<std::string> hash_fn;
+			/*std::transform((*iter).begin(), (*iter).end(), (*iter).begin(), ::tolower);*/
+			std::string temp(*iter);
+			std::transform(temp.begin(), temp.end(), temp.begin(), ::tolower);
+
+			//long double proba = ((long double) *data[temp] )[1]/( (long double) *data[temp])[0] + (long double) *data[temp])[1]);
+			auto it = data.find(temp);
+			// la clave existe
+			if (it != data.end()){
+				long double proba = ((long double)(*data[temp])[1])/(((long double)(*data[temp])[0]) + ((long double)(*data[temp])[1]));
+				suma_probas += proba;
+				cantidad_palabras++;
+			}
+			
+			//hash_palabras.push_back(str_hash % dimensiones);
+			/*if (bigramas){
+				std::string gram(pal_ant + " " + temp);
+				// printf("Bigrama %s", gram.c_str());
+				std::transform(gram.begin(), gram.end(), gram.begin(), ::tolower);
+				std::size_t gram_hash = hash_fn(gram);
+				hash_palabras.push_back(gram_hash % dimensiones);
+				pal_ant = temp;
+			}*/
+		}
+		// pred->push_back(suma_probas/cantidad_palabras);
+		if (cantidad_palabras != 0){
+			pred->push_back(suma_probas/cantidad_palabras);
+		} else {
+			puts("Un error");
+			pred->push_back(0.5); // no se que está pasando acá
+		}
+	}
+	input.close();
+	return pred;
+}
