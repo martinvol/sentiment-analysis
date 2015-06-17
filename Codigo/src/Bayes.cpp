@@ -84,26 +84,35 @@ Bayes::~Bayes(){
 }
 
 // void Bayes::entrenar(int tag, std::vector<std::string*>* oracion){
-void Bayes::entrenar(int tag, std::string word ){
+void Bayes::entrenar(int tag, std::string word){
 	std::string* palabra;
+		
+	palabra = &word;
+	//std::cout << palabra << "\n";
+	
 
+	if(data.find(*palabra) == data.end()){
+		data[*palabra] = new std::vector<int>(2);
+		(*data[*palabra])[0] = 0;
+		(*data[*palabra])[1] = 0;
 		
-		palabra = &word;
-		//std::cout << palabra << "\n";
-		
+	}
+	
+	if(tag == 0){
+		(*data[*palabra])[0]++;
+	}else{
+		(*data[*palabra])[1]++;
+	}
 
-		if(data.find(*palabra) == data.end()){
-			data[*palabra] = new std::vector<int>(2);
-			(*data[*palabra])[0] = 0;
-			(*data[*palabra])[1] = 0;
-			
-		}
-		
-		if(tag == 0){
-			(*data[*palabra])[0]++;
-		}else{
-			(*data[*palabra])[1]++;
-		}
+}
+
+void Bayes::entrenar_orden2(int tag, std::string word, std::string previus){
+	if (data_orden2.find(previus) == data_orden2.end()){
+		// no está la palabra anterior
+		//data_orden2[previus] = new std::unordered_map< std::string, std::vector<int>*>();
+
+
+	}
 
 }
 
@@ -209,3 +218,4 @@ std::vector<long double>* Bayes::Predicciones(){
 	input.close();
 	return pred;
 }
+
