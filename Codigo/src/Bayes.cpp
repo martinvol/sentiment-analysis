@@ -10,6 +10,9 @@
 #include <locale>         // std::locale, std::tolower
 #include <math.h>
 #include <cmath> 
+
+#define BIGRAMS true
+
 /*
 bool check_positive_negative(review, data){
     total = 0
@@ -53,6 +56,9 @@ Bayes::Bayes(){
 			std::transform(pal_ant.begin(), pal_ant.end(), pal_ant.begin(), ::tolower);
 			// palabra está en: pal_ant
 			
+			entrenar(tag, pal_ant);
+			iter++;
+
 			for( ; iter != end; ++iter ) {
 				//std::tr1::hash<std::string> hash_fn;
 				/*std::transform((*iter).begin(), (*iter).end(), (*iter).begin(), ::tolower);*/
@@ -60,14 +66,14 @@ Bayes::Bayes(){
 				std::transform(temp.begin(), temp.end(), temp.begin(), ::tolower);
 				entrenar(tag, temp);
 				//hash_palabras.push_back(str_hash % dimensiones);
-				/*if (bigramas){
+
+				if (BIGRAMS){
 					std::string gram(pal_ant + " " + temp);
-					// printf("Bigrama %s", gram.c_str());
+					// printf(" %s", gram.c_str());
 					std::transform(gram.begin(), gram.end(), gram.begin(), ::tolower);
-					std::size_t gram_hash = hash_fn(gram);
-					hash_palabras.push_back(gram_hash % dimensiones);
+					entrenar(tag, pal_ant);
 					pal_ant = temp;
-				}*/
+				}
 			}
 		}
 
@@ -132,12 +138,27 @@ std::vector<long double>* Bayes::Predicciones(){
 		boost::sregex_token_iterator end;
 
 		// Tengo que hacer la iteracion una vez antes del for:
-		//std::string pal_ant(*iter);
-		//std::transform(pal_ant.begin(), pal_ant.end(), pal_ant.begin(), ::tolower);
+		std::string pal_ant(*iter);
+		std::transform(pal_ant.begin(), pal_ant.end(), pal_ant.begin(), ::tolower);
 		// palabra está en: pal_ant
 		
 		long double suma_probas = 0;
 		float cantidad_palabras = 0; // es una cantidad, pero no quiero castear después
+
+		auto saved = data.find(pal_ant);
+			// la clave existe
+		if (saved != data.end()){
+			long double proba = ((long double)(*data[pal_ant])[1])/(((long double)(*data[pal_ant])[0]) + ((long double)(*data[pal_ant])[1]));
+			suma_probas += proba;
+			cantidad_palabras++;
+		}
+		iter++;
+
+		// Tengo que hacer la iteracion una vez antes del for:
+		//std::string pal_ant(*iter);
+		//std::transform(pal_ant.begin(), pal_ant.end(), pal_ant.begin(), ::tolower);
+		// palabra está en: pal_ant
+		
 		for( ; iter != end; ++iter ) {
 			//std::tr1::hash<std::string> hash_fn;
 			/*std::transform((*iter).begin(), (*iter).end(), (*iter).begin(), ::tolower);*/
@@ -145,13 +166,27 @@ std::vector<long double>* Bayes::Predicciones(){
 			std::transform(temp.begin(), temp.end(), temp.begin(), ::tolower);
 
 			//long double proba = ((long double) *data[temp] )[1]/( (long double) *data[temp])[0] + (long double) *data[temp])[1]);
-			auto it = data.find(temp);
+			auto saved2 = data.find(temp);
 			// la clave existe
-			if (it != data.end()){
+			if (saved2 != data.end()){
 				long double proba = ((long double)(*data[temp])[1])/(((long double)(*data[temp])[0]) + ((long double)(*data[temp])[1]));
 				suma_probas += proba;
 				cantidad_palabras++;
 			}
+			if (BIGRAMS){
+					std::string gram(pal_ant + " " + temp);
+					// printf(" %s", gram.c_str());
+					std::transform(gram.begin(), gram.end(), gram.begin(), ::tolower);
+					auto saved3 = data.find(gram);
+					// la clave existe
+					if (saved3 != data.end()){
+						long double proba = ((long double)(*data[pal_ant])[1])/(((long double)(*data[pal_ant])[0]) + ((long double)(*data[pal_ant])[1]));
+						suma_probas += proba;
+						cantidad_palabras++;
+					}
+					// entrenar(tag, pal_ant);
+					pal_ant = temp;
+				}
 			
 			//hash_palabras.push_back(str_hash % dimensiones);
 			/*if (bigramas){
