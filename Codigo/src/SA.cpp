@@ -43,7 +43,7 @@ int main() {
 	
     /*long long double a = 1;
     long long double b = 3;*/
-	std::cout.precision(190);
+	//std::cout.precision(190);
 
 	//printf("%f\n", a/b);
 	//printf("%lu\n", sizeof(a));
