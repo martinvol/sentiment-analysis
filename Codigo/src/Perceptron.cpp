@@ -19,7 +19,7 @@
 
 typedef std::vector<std::vector<std::string> > Rows;
 
-Perceptron::Perceptron(int dimension, float learning_rate, int numero_pasadas, int nro_errores, bool bigrams) {
+Perceptron::Perceptron(int dimension, float learning_rate, int numero_pasadas, int nro_errores, bool bigrams,bool trigrams) {
 	pesos.resize(dimension);
 	std::fill(pesos.begin(), pesos.end(), 0);
 	// pesos.shrink_to_fit();
@@ -28,6 +28,7 @@ Perceptron::Perceptron(int dimension, float learning_rate, int numero_pasadas, i
 	pasadas = numero_pasadas;
 	tolerancia = nro_errores;
 	bigramas = bigrams;
+	trigramas = trigrams;
 
 }
 
@@ -65,29 +66,46 @@ void Perceptron::Entrenar(){
 			boost::sregex_token_iterator end;
 			std::vector<std::size_t> hash_palabras; 
 
-			// Tengo que hacer la iteracion una vez antes del for:
+			// Tengo que hacer la iteracion una vez antes del for para bigramas:
 			std::tr1::hash<std::string> hash_fn;
 			std::string pal_ant(*iter);
+			std::string pal_ant_ant(*iter);
 			std::transform(pal_ant.begin(), pal_ant.end(), pal_ant.begin(), ::tolower);
 			std::size_t str_hash = hash_fn(pal_ant);
 			hash_palabras.push_back(str_hash % dimensiones);
+			pal_ant_ant = pal_ant;
+			++iter;
+			// Para trigramas:
+			std::string temp(*iter);
+			std::transform(temp.begin(), temp.end(), temp.begin(), ::tolower);
+			str_hash = hash_fn(temp);
+			hash_palabras.push_back(str_hash % dimensiones);
+			std::string gram(pal_ant + " " + temp);
+			std::transform(gram.begin(), gram.end(), gram.begin(), ::tolower);
+			std::size_t gram_hash = hash_fn(gram);
+			hash_palabras.push_back(gram_hash % dimensiones);
+			pal_ant = temp;
 			++iter;
 
 			for( ; iter != end; ++iter ) {
-				std::tr1::hash<std::string> hash_fn;
-				/*std::transform((*iter).begin(), (*iter).end(), (*iter).begin(), ::tolower);*/
 				std::string temp(*iter);
 				std::transform(temp.begin(), temp.end(), temp.begin(), ::tolower);
 				std::size_t str_hash = hash_fn(temp);
 				hash_palabras.push_back(str_hash % dimensiones);
 				if (bigramas){
 					std::string gram(pal_ant + " " + temp);
-					// printf("Bigrama %s", gram.c_str());
 					std::transform(gram.begin(), gram.end(), gram.begin(), ::tolower);
 					std::size_t gram_hash = hash_fn(gram);
 					hash_palabras.push_back(gram_hash % dimensiones);
-					pal_ant = temp;
 				}
+				if (trigramas){
+					std::string tri(pal_ant_ant + " " + pal_ant + " " + temp);
+					std::transform(tri.begin(),tri.end(),tri.begin(), ::tolower);
+					std::size_t tri_hash = hash_fn(tri);
+					hash_palabras.push_back(tri_hash % dimensiones);
+				}
+				pal_ant = temp;
+				pal_ant_ant = pal_ant;
 			}
 
 			Perceptron::Agregar(tag,&errores,hash_palabras);
@@ -95,6 +113,7 @@ void Perceptron::Entrenar(){
 		fprintf(stderr,"nro de pasada: %d, cantidad de errores %d \n",i,errores);
 		if (errores <= tolerancia){
 			//hay overfit, frenamos
+			input.close();
 			break;
 		}
 		input.close();
@@ -135,16 +154,29 @@ std::vector<long double>Perceptron::Predicciones(){
 		boost::sregex_token_iterator end;
 		std::vector<std::size_t> hash_palabras;
 
-		// Tengo que hacer la iteracion una vez antes del for:
+		// Tengo que hacer la iteracion una vez antes del for para bigramas:
 		std::tr1::hash<std::string> hash_fn;
 		std::string pal_ant(*iter);
+		std::string pal_ant_ant(*iter);
 		std::transform(pal_ant.begin(), pal_ant.end(), pal_ant.begin(), ::tolower);
 		std::size_t str_hash = hash_fn(pal_ant);
 		hash_palabras.push_back(str_hash % dimensiones);
+		pal_ant_ant = pal_ant;
+		++iter;
+		// Para trigramas:
+		std::string temp(*iter);
+		std::transform(temp.begin(), temp.end(), temp.begin(), ::tolower);
+		str_hash = hash_fn(temp);
+		hash_palabras.push_back(str_hash % dimensiones);
+		std::string gram(pal_ant + " " + temp);
+		std::transform(gram.begin(), gram.end(), gram.begin(), ::tolower);
+		std::size_t gram_hash = hash_fn(gram);
+		hash_palabras.push_back(gram_hash % dimensiones);
+		pal_ant = temp;
 		++iter;
 
+
 		for( ; iter != end; ++iter ) {
-			std::tr1::hash<std::string> hash_fn;
 			std::string temp(*iter);
 			std::transform(temp.begin(), temp.end(), temp.begin(), ::tolower);
 			std::size_t str_hash = hash_fn(temp);
@@ -155,8 +187,15 @@ std::vector<long double>Perceptron::Predicciones(){
 				std::transform(gram.begin(), gram.end(), gram.begin(), ::tolower);
 				std::size_t gram_hash = hash_fn(gram);
 				hash_palabras.push_back(gram_hash % dimensiones);
-				pal_ant = temp;
 			}
+			if (trigramas){
+				std::string tri(pal_ant_ant + " " + pal_ant + " " + temp);
+				std::transform(tri.begin(),tri.end(),tri.begin(), ::tolower);
+				std::size_t tri_hash = hash_fn(tri);
+				hash_palabras.push_back(tri_hash % dimensiones);
+			}
+			pal_ant = temp;
+			pal_ant_ant = pal_ant;
 		}
 		long double proba = Perceptron::Clasificar(hash_palabras);
 		if (proba > max) max = proba;
