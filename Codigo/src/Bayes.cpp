@@ -71,7 +71,7 @@ Bayes::Bayes(){
 					std::string gram(pal_ant + " " + temp);
 					// printf(" %s", gram.c_str());
 					std::transform(gram.begin(), gram.end(), gram.begin(), ::tolower);
-					entrenar(tag, pal_ant);
+					entrenar(tag, gram);
 					pal_ant = temp;
 				}
 			}
@@ -180,7 +180,7 @@ std::vector<long double>* Bayes::Predicciones(){
 					auto saved3 = data.find(gram);
 					// la clave existe
 					if (saved3 != data.end()){
-						long double proba = ((long double)(*data[pal_ant])[1])/(((long double)(*data[pal_ant])[0]) + ((long double)(*data[pal_ant])[1]));
+						long double proba = ((long double)(*data[gram])[1])/(((long double)(*data[gram])[0]) + ((long double)(*data[gram])[1]));
 						suma_probas += proba;
 						cantidad_palabras++;
 					}
