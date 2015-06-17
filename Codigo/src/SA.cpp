@@ -43,7 +43,7 @@ int main() {
 	
     /*long long double a = 1;
     long long double b = 3;*/
-	std::cout.precision(190);
+	//std::cout.precision(190);
 
 	//printf("%f\n", a/b);
 	//printf("%lu\n", sizeof(a));
@@ -51,12 +51,12 @@ int main() {
 
 
 	int dimension = pow(2,26);
-	fprintf(stderr,"%d",dimension);
 	float rate = 0.1;
 	int pasadas = 80;
 	int errores = 0;
 	bool bigramas = true;
-	Perceptron miPerceptron(dimension, rate, pasadas, errores, bigramas);
+	bool trigramas = true;
+	Perceptron miPerceptron(dimension, rate, pasadas, errores, bigramas, trigramas);
 	miPerceptron.Entrenar();
 	
 	std::vector<long double> preds = miPerceptron.Predicciones();
@@ -77,9 +77,6 @@ int main() {
 	}
 
 	myfile.close();
-
-	//Bayes miBayes;
-
 
 	return 0;
 

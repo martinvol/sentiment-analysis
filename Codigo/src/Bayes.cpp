@@ -12,6 +12,11 @@
 #include <cmath> 
 
 #define BIGRAMS true
+/*#define LABELED "labeledTrainData.tsv"
+#define UNLABELED "testData.tsv"*/
+
+#define LABELED "labeledTrainData.tsv"
+#define UNLABELED "testData.tsv"
 
 /*
 bool check_positive_negative(review, data){
@@ -120,7 +125,7 @@ double evaluar (std::vector<std::vector<std::string*>*>* oraciones);
 
 std::vector<long double>* Bayes::Predicciones(){
 	Rows rows;
-	std::ifstream input("testData.tsv");
+	std::ifstream input(UNLABELED);
 	if (!input) {
 		std::cout << "unable to load file" << std::endl;
 	}
