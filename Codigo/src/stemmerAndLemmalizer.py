@@ -10,7 +10,7 @@ def clean(s):
 	out = " ".join(re.findall(r'\w+', s,flags = re.UNICODE | re.LOCALE)).lower()
 	return out
 
-archivo = open("labeledTrainData.tsv",'r')
+archivo = open("../Data/unlabeledTrainData.tsv",'r')
 
 lines = archivo.readlines()
 
@@ -23,9 +23,16 @@ for e, line in enumerate(lines):
 	if not 0==e:
 		r = line.strip().split("\t")
 		id = r[0]
-		label = r[1]
-		review = r[2]
-		review = clean(r[2])
+		review = ""
+		label = ""
+		if len(r) < 3 :
+			review = r[1]
+		else:
+			label = r[1]
+			review = r[2] 
+
+
+		review = clean(review)
 		review = lancaster_stemmer.stem(review) 
 		review =  " ".join([lmtzr.lemmatize(i,'n') for i in review.split()])
 		review =  " ".join([lmtzr.lemmatize(i,'v') for i in review.split()])
@@ -33,12 +40,16 @@ for e, line in enumerate(lines):
 			review = unicodedata.normalize('NFKD', review).encode('ascii','ignore')
 		except Exception, e:
 			pass
-		linea=[id,label,review]
+		linea=[]
+		if len(r) < 3 :
+			linea=[id,review]
+		else:
+			linea=[id,label,review]
 		newLines.append("\t".join(linea))
 	else:
 		newLines.append(line)
 
 stringToWrite = "\n".join(x for x in newLines)
-newArchivo = open("labeledTrainDataStemmedAndLemmalitized.tsv",'w')
+newArchivo = open("../Data/unlabeledTrainDataStemmedAndLemmalitized.tsv",'w')
 newArchivo.write(stringToWrite)
 newArchivo.close()
