@@ -43,7 +43,7 @@ Bayes::Bayes(){
 	data = new std::unordered_map< std::string, std::vector<int>* >();
 
 	Rows rows;
-	std::ifstream input("labeledTrainData.tsv");
+	std::ifstream input(LABELED);
 	if (!input) {
 		std::cout << "unable to load file" << std::endl;
 	}
@@ -71,7 +71,7 @@ Bayes::Bayes(){
 		int pasadas = 0;
 		while (!termine){
 			termine = true;
-			std::ifstream input("labeledTrainData.tsv");
+			std::ifstream input(LABELED);
 			if (!input) {
 				std::cout << "unable to load file" << std::endl;
 			}
