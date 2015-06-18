@@ -10,7 +10,7 @@ def clean(s):
 	out = " ".join(re.findall(r'\w+', s,flags = re.UNICODE | re.LOCALE)).lower()
 	return out
 
-archivo = open("../Data/unlabeledTrainData.tsv",'r')
+archivo = open("../testData.tsv",'r')
 
 lines = archivo.readlines()
 
@@ -50,6 +50,6 @@ for e, line in enumerate(lines):
 		newLines.append(line)
 
 stringToWrite = "\n".join(x for x in newLines)
-newArchivo = open("../Data/unlabeledTrainDataStemmedAndLemmalitized.tsv",'w')
+newArchivo = open("../testDataStemmedAndLemmalitized.tsv",'w')
 newArchivo.write(stringToWrite)
 newArchivo.close()
