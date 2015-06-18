@@ -21,7 +21,7 @@
 #define LABELED "labeledTrainData.tsv"
 #define UNLABELED "testData.tsv"
 
-/*#define LABELED "Data/labeledTrainDataStemmedAndLemmalitized.tsv"
+/*#define LABELED "labeledTrainDataStemmedAndLemmalitized.tsv"
 #define UNLABELED "testDataStemmedAndLemmalitized.tsv"*/
 
 /*
