@@ -310,6 +310,7 @@ long double Bayes::evaluar (boost::sregex_token_iterator iter){
 
 std::vector<long double>* Bayes::Predicciones(){
 	Rows rows;
+	long double max=0, min=1;
 	std::ifstream input(UNLABELED);
 	if (!input) {
 		std::cout << "unable to load file" << std::endl;
@@ -335,8 +336,19 @@ std::vector<long double>* Bayes::Predicciones(){
 		boost::regex regex("\\w+");
 		boost::sregex_token_iterator iter(text.begin(), text.end(), regex, 0);
 		
-		pred->push_back(evaluar(iter));
 
+		long double proba = evaluar(iter);
+		if (proba > max) max = proba;
+		if (proba < min) min = proba;
+		pred->push_back(proba);
+		// predicciones.push_back(pred);
+
+
+		//pred->push_back();
+
+	}
+	for (std::vector<long double >::iterator it = pred->begin(); it !=pred->end(); ++it){
+		(*it) = (((*it) - min) / (max - min));
 	}
 	input.close();
 	return pred;
