@@ -19,7 +19,8 @@
 #define JUMPER false
 #define BOOSTING true
 #define LABELED "labeledTrainData.tsv"
-#define UNLABELED "testData.tsv"
+// #define UNLABELED "testData.tsv"
+#define UNLABELED "Data/unlabeledTrainData.tsv"
 
 /*#define LABELED "labeledTrainDataStemmedAndLemmalitized.tsv"
 #define UNLABELED "testDataStemmedAndLemmalitized.tsv"*/
@@ -33,16 +34,15 @@ bool check_positive_negative(review, data){
     return 1 if total/float(len(review.split())) >= 0.5 else 0
 }*/
 
-typedef std::vector<std::vector<std::string> > Rows;
 
 
 Bayes::Bayes(){
+	Rows rows;
 	char const row_delim = '\n';
 	char const field_delim = '\t';
 	std::string firstrow;
 	data = new std::unordered_map< std::string, std::vector<int>* >();
 
-	Rows rows;
 	std::ifstream input(LABELED);
 	if (!input) {
 		std::cout << "unable to load file" << std::endl;
@@ -309,7 +309,6 @@ long double Bayes::evaluar (boost::sregex_token_iterator iter){
 }
 
 std::vector<long double>* Bayes::Predicciones(){
-	Rows rows;
 	long double max=0, min=1;
 	std::ifstream input(UNLABELED);
 	if (!input) {

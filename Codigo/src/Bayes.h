@@ -10,6 +10,8 @@
 #include <boost/regex.hpp>
 #include <boost/algorithm/string.hpp>
 
+typedef std::vector<std::vector<std::string> > Rows;
+
 class Bayes {
 private:
 
@@ -37,6 +39,8 @@ public:
 	void aprender (int tag, boost::sregex_token_iterator oraciones);
 	long double evaluar (boost::sregex_token_iterator oraciones);
 	std::vector<long double>* Predicciones();
+
+	Rows rows;
 
 };
 

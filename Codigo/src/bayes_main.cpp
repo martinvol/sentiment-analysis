@@ -69,6 +69,8 @@ int main() {
 		myfile << ids[i];
 		myfile << ",";
 		myfile << std::fixed << std::setprecision(53) << (*preds)[i];
+		myfile << ",";
+		myfile << myBayes.rows[i][1];
 		myfile << "\n";
 		//std::cout << std::fixed << std::cout.precision(190) << preds[i] << std::endl;
 	}
