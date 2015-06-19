@@ -18,9 +18,11 @@
 #define TRIGRAMS false
 #define JUMPER false
 #define BOOSTING true
+
 #define LABELED "labeledTrainData.tsv"
-// #define UNLABELED "testData.tsv"
+// #define LABELED "piping_75k.csv"
 #define UNLABELED "Data/unlabeledTrainData.tsv"
+//#define UNLABELED "testData.tsv"
 
 /*#define LABELED "labeledTrainDataStemmedAndLemmalitized.tsv"
 #define UNLABELED "testDataStemmedAndLemmalitized.tsv"*/
