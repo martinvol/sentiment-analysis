@@ -120,11 +120,11 @@ void Perceptron::Entrenar(){
 	}
 }
 
-std::vector<long double>Perceptron::Predicciones(){
+std::vector<long double>Perceptron::Predicciones(const std::string path){
 	// std::vector< std::vector<long double> > predicciones;
 
 	Rows rows;
-	std::ifstream input("testData.tsv");
+	std::ifstream input(path);
 	if (!input) {
 		std::cout << "unable to load file" << std::endl;
 	}
@@ -148,6 +148,7 @@ std::vector<long double>Perceptron::Predicciones(){
 		ids.push_back(id);
 
 		std::string text = (*it)[1];
+		reviews.push_back(text);
 	
 		boost::regex regex("\\w+");
 		boost::sregex_token_iterator iter(text.begin(), text.end(), regex, 0);
@@ -183,7 +184,6 @@ std::vector<long double>Perceptron::Predicciones(){
 			hash_palabras.push_back(str_hash%dimensiones);
 			if (bigramas){
 				std::string gram(pal_ant + " " + temp);
-				// printf("Bigrama %s", gram.c_str());
 				std::transform(gram.begin(), gram.end(), gram.begin(), ::tolower);
 				std::size_t gram_hash = hash_fn(gram);
 				hash_palabras.push_back(gram_hash % dimensiones);
@@ -212,6 +212,10 @@ std::vector<long double>Perceptron::Predicciones(){
 
 std::vector<std::string> Perceptron::ObtenerIds(){
 	return ids;
+}
+
+std::vector<std::string> Perceptron::ObtenerReviews(){
+	return reviews;
 }
 
 long double Perceptron::Sigmoid(long double activacion){

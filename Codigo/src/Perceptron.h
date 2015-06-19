@@ -14,6 +14,7 @@ class Perceptron {
 private:
 	std::vector<long double> pesos;
 	std::vector<std::string> ids;
+	std::vector<std::string> reviews;
 	int dimensiones;
 	float rate;
 	int pasadas;
@@ -29,10 +30,11 @@ public:
 	void Entrenar();
 	// std::vector< std::vector<long double> > Predicciones();
 	long double Sigmoid(long double activacion);
-	std::vector<long double> Predicciones();
+	std::vector<long double> Predicciones(const std::string path);
 	void Agregar(int tag,int *errores,std::vector<unsigned long>& features);
 	long double Clasificar(std::vector<unsigned long>& features);
 	std::vector<std::string> ObtenerIds();
+	std::vector<std::string> ObtenerReviews();
 };
 
 #endif /* PERCEPTRON_H_ */

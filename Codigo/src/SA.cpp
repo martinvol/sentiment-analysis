@@ -49,31 +49,78 @@ int main() {
 	//printf("%lu\n", sizeof(a));
 	//std::cout << a/b << std::endl;
 
-
+    bool producir_piping = true;
+    bool recibir_piping = false;
 	int dimension = pow(2,26);
 	float rate = 0.1;
-	int pasadas = 80;
+	int pasadas = 60;
 	int errores = 0;
 	bool bigramas = true;
 	bool trigramas = true;
+
+
+
 	Perceptron miPerceptron(dimension, rate, pasadas, errores, bigramas, trigramas);
 	miPerceptron.Entrenar();
+	if (recibir_piping){
+		std::cout << "Entrenando con Piping \n";
+		std::string piping_path("OutBayes.csv");
+	}
 	
-	std::vector<long double> preds = miPerceptron.Predicciones();
+	std::string path("testData.tsv");
+	std::vector<long double> preds = miPerceptron.Predicciones(path);
+
 	std::ofstream myfile ("submission.csv", std::ofstream::trunc);
 	if (!myfile) {
 		fprintf(stderr,"error al abrir \n");
 	}
 
-	myfile << "\"id\",\"sentiment\"";
-	myfile << "\n";
+    std::string row_delim = "\n";
+	std::string field_delim = ",";
+    if (producir_piping){
+    	std::cout << "Produciendo piping \n";
+    	row_delim = "\n";
+		field_delim = "\t";
+    }
+
+    myfile << "\"id\"";
+    myfile << field_delim;
+	myfile << "\"sentiment\"";
+	if (producir_piping){
+		myfile << field_delim;
+		myfile << "\"review\"";
+	}
+	myfile << row_delim;
+
 	std::vector<std::string> ids = miPerceptron.ObtenerIds();
+	std::vector<std::string> reviews = miPerceptron.ObtenerReviews();
 	for (int i = 0; i < 25000; i++){
 		myfile << ids[i];
-		myfile << ",";
+		myfile << field_delim;
 		myfile << std::fixed << std::setprecision(53) << preds[i];
-		myfile << "\n";
+
+		if (producir_piping){
+			myfile << field_delim;
+			myfile << reviews[i];
+		}
+
+		myfile << row_delim;
 		//std::cout << std::fixed << std::cout.precision(190) << preds[i] << std::endl;
+	}
+
+	if (producir_piping){
+		std::string path_50k("unlabeledTrainData.tsv");
+		std::vector<long double> preds_50k = miPerceptron.Predicciones(path_50k);
+		reviews = miPerceptron.ObtenerReviews();
+		ids = miPerceptron.ObtenerIds();
+		for (int i = 0; i < 50000; i++){
+			myfile << ids[i];
+			myfile << field_delim;
+			myfile << std::fixed << std::setprecision(53) << preds_50k[i];
+			myfile << field_delim;
+			myfile << reviews[i];
+			myfile << row_delim;
+		}
 	}
 
 	myfile.close();
