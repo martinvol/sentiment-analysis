@@ -65,7 +65,7 @@ int main() {
 	myfile << "\"id\",\"sentiment\"";
 	myfile << "\n";
 	std::vector<std::string> ids = myBayes.ids;
-		for (int i = 0; i < 25000; i++){
+		for (unsigned int i = 0; i < ids.size(); i++){
 		myfile << ids[i];
 		myfile << ",";
 		myfile << std::fixed << std::setprecision(53) << (*preds)[i];

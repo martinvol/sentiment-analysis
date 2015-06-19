@@ -10,13 +10,13 @@ main.o: src/SA.cpp
 	$(CC) "src/SA.cpp" -c $(CFLAGS)
 
 main_bayes.o: src/bayes_main.cpp
-	$(CC) "src/bayes_main.cpp" -c $(CFLAGS)
+	$(CC) "src/bayes_main.cpp" -c $(CFLAGS) $(BOSTFLAGS)
 
 Perceptron.o: src/Perceptron.cpp src/Perceptron.h
 	$(CC) "src/Perceptron.cpp" -c $(CFLAGS)
 
 Bayes.o: src/Bayes.cpp src/Bayes.h
-	$(CC) "src/Bayes.cpp" -c $(CFLAGS)
+	$(CC) "src/Bayes.cpp" -c $(CFLAGS) $(BOSTFLAGS)
 
 
 compilar: Perceptron.o main.o
