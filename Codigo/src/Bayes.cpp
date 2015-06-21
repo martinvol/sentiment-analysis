@@ -19,10 +19,11 @@
 #define JUMPER false
 #define BOOSTING true
 
-#define LABELED "labeledTrainData.tsv"
-// #define LABELED "piping_75k.csv"
-#define UNLABELED "Data/unlabeledTrainData.tsv"
-//#define UNLABELED "testData.tsv"
+//#define LABELED "labeledTrainData.tsv"
+#define LABELED "piping_75k.csv"
+
+//#define UNLABELED "Data/unlabeledTrainData.tsv"
+#define UNLABELED "testData.tsv"
 
 /*#define LABELED "labeledTrainDataStemmedAndLemmalitized.tsv"
 #define UNLABELED "testDataStemmedAndLemmalitized.tsv"*/
@@ -58,12 +59,25 @@ Bayes::Bayes(){
 		}
 	}
 	for (std::vector<std::vector<std::string> >::iterator it = rows.begin(); it !=rows.end(); ++it){
-		int tag = std::stoi((*it)[1]);
-		std::string text = (*it)[2];
-	
-		boost::regex regex("\\w+");
-		boost::sregex_token_iterator iter(text.begin(), text.end(), regex, 0);
-		aprender(tag, iter);
+		float proba = std::stof((*it)[1], NULL);
+		//printf("%f\n", proba);
+		int tag;
+		bool procesar =  false;
+		if (proba > 0.6){
+			tag = 1;
+			procesar = true;
+		} else if (proba < 0.4){
+			tag = 0;
+			procesar = true;
+		}
+
+		if (procesar){
+			std::string text = (*it)[2];
+		
+			boost::regex regex("\\w+");
+			boost::sregex_token_iterator iter(text.begin(), text.end(), regex, 0);
+			aprender(tag, iter);
+		}
 	}
 
 	if (BOOSTING){
@@ -71,7 +85,7 @@ Bayes::Bayes(){
 
 		bool termine = false;
 		int pasadas = 0;
-		while (!termine){
+		while (!termine && pasadas < 10){
 			termine = true;
 			std::ifstream input(LABELED);
 			if (!input) {
@@ -80,23 +94,34 @@ Bayes::Bayes(){
 
 			int errores = 0;
 			for (std::vector<std::vector<std::string> >::iterator it = rows.begin(); it !=rows.end(); ++it){
-				int tag = std::stoi((*it)[1]);
-				std::string text = (*it)[2];
+				float proba = std::stof((*it)[1], NULL);
+				int tag;
+				bool procesar =  false;
+				if (proba > 0.6){
+					tag = 1;
+					procesar = true;
+				} else if (proba < 0.4){
+					tag = 0;
+					procesar = true;
+				}
+				//int tag = std::stoi((*it)[1]);
+				if (procesar){
+					std::string text = (*it)[2];
 
-				boost::regex regex("\\w+");
-				boost::sregex_token_iterator iter(text.begin(), text.end(), regex, 0);
-				float first_try = evaluar(iter);
-				if ((first_try > 0.5) != tag && (first_try != 0.5)){
-					errores++;
-					while ((evaluar(iter) > 0.5) != tag){
-						//printf("evaluar %Le\n", evaluar(iter) );
-						termine = false;
-						boost::regex regex("\\w+");
-						boost::sregex_token_iterator iter2(text.begin(), text.end(), regex, 0);
-						aprender(tag, iter2);
+					boost::regex regex("\\w+");
+					boost::sregex_token_iterator iter(text.begin(), text.end(), regex, 0);
+					float first_try = evaluar(iter);
+					if ((first_try > 0.5) != tag && (first_try != 0.5)){
+						errores++;
+						while ((evaluar(iter) > 0.5) != tag){
+							//printf("evaluar %Le\n", evaluar(iter) );
+							termine = false;
+							boost::regex regex("\\w+");
+							boost::sregex_token_iterator iter2(text.begin(), text.end(), regex, 0);
+							aprender(tag, iter2);
+						}
 					}
 				}
-
 			}
 			fprintf(stderr,"nro de pasada: %d, cantidad de errores %d \n",pasadas,errores);
 			pasadas++;
