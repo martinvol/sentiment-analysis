@@ -42,7 +42,7 @@ void Perceptron::Entrenar(){
 	for (int i = 0; i <= pasadas; i++ ){
 		int errores = 0;
 		Rows rows;
-		std::ifstream input("labeledTrainData.tsv");
+		std::ifstream input("outBayes.csv");
 		if (!input) {
 			std::cout << "unable to load file" << std::endl;
 		}
@@ -58,7 +58,21 @@ void Perceptron::Entrenar(){
 			}
 		}
 		for (std::vector<std::vector<std::string> >::iterator it = rows.begin(); it !=rows.end(); ++it){
-			int tag = std::stoi((*it)[1]);
+			std::string temporal((*it)[1]);
+			int tag;
+
+			long double margen_pos = 0.65;
+			long double margen_neg = 0.35;
+			long double prob = std::stold(temporal.c_str());
+			if (prob > margen_pos){
+				tag = 1;
+			}
+			else if(prob < margen_neg){
+				tag = 0;
+			}
+			else{
+				continue;
+			}
 			std::string text = (*it)[2];
 		
 			boost::regex regex("\\w+");

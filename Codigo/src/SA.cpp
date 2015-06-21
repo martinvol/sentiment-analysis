@@ -50,10 +50,9 @@ int main() {
 	//std::cout << a/b << std::endl;
 
     bool producir_piping = true;
-    bool recibir_piping = false;
 	int dimension = pow(2,26);
 	float rate = 0.1;
-	int pasadas = 60;
+	int pasadas = 1;
 	int errores = 0;
 	bool bigramas = true;
 	bool trigramas = true;
@@ -62,13 +61,6 @@ int main() {
 
 	Perceptron miPerceptron(dimension, rate, pasadas, errores, bigramas, trigramas);
 	miPerceptron.Entrenar();
-	if (recibir_piping){
-		std::cout << "Entrenando con Piping \n";
-		std::string piping_path("OutBayes.csv");
-	}
-	
-	std::string path("testData.tsv");
-	std::vector<long double> preds = miPerceptron.Predicciones(path);
 
 	std::ofstream myfile ("submission.csv", std::ofstream::trunc);
 	if (!myfile) {
@@ -92,27 +84,31 @@ int main() {
 	}
 	myfile << row_delim;
 
-	std::vector<std::string> ids = miPerceptron.ObtenerIds();
-	std::vector<std::string> reviews = miPerceptron.ObtenerReviews();
-	for (int i = 0; i < 25000; i++){
-		myfile << ids[i];
-		myfile << field_delim;
-		myfile << std::fixed << std::setprecision(53) << preds[i];
-
-		if (producir_piping){
+	if (!producir_piping){
+		std::string path("testData.tsv");
+		std::vector<long double> preds = miPerceptron.Predicciones(path);
+		std::vector<std::string> ids = miPerceptron.ObtenerIds();
+		std::vector<std::string> reviews = miPerceptron.ObtenerReviews();
+		for (int i = 0; i < 25000; i++){
+			myfile << ids[i];
 			myfile << field_delim;
-			myfile << reviews[i];
-		}
+			myfile << std::fixed << std::setprecision(53) << preds[i];
 
-		myfile << row_delim;
-		//std::cout << std::fixed << std::cout.precision(190) << preds[i] << std::endl;
+			if (producir_piping){
+				myfile << field_delim;
+				myfile << reviews[i];
+			}
+
+			myfile << row_delim;
+			//std::cout << std::fixed << std::cout.precision(190) << preds[i] << std::endl;
+		}
 	}
 
 	if (producir_piping){
 		std::string path_50k("unlabeledTrainData.tsv");
 		std::vector<long double> preds_50k = miPerceptron.Predicciones(path_50k);
-		reviews = miPerceptron.ObtenerReviews();
-		ids = miPerceptron.ObtenerIds();
+		std::vector<std::string> reviews = miPerceptron.ObtenerReviews();
+		std::vector<std::string> ids = miPerceptron.ObtenerIds();
 		for (int i = 0; i < 50000; i++){
 			myfile << ids[i];
 			myfile << field_delim;
