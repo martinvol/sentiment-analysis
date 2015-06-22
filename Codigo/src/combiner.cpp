@@ -31,8 +31,12 @@ int main(int argc, char const *argv[]){
 	}*/
 
 	std::ofstream myfile ("submission.csv", std::ofstream::trunc);
+	std::ofstream probs ("grupo2_probs.csv", std::ofstream::trunc);
 	myfile << "\"id\",\"sentiment\"";
 	myfile << "\n";
+	probs  << "\"id\",\"sentiment\"";
+	probs  << "\n";
+
 	getline(input1, firstrow, row_delim);
 	getline(input2, firstrow, row_delim);
 	getline(input3, firstrow, row_delim);
@@ -75,6 +79,8 @@ int main(int argc, char const *argv[]){
 
 		myfile << ",";
 		myfile << promedio;
+		probs  << promedio;
+		probs  << "\n";
 		myfile << "\n";
 		
 	}
