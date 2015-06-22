@@ -57,13 +57,13 @@ int main() {
 	std::vector<long double>* preds = myBayes.Predicciones();
 	puts("Terminé de labelear");
 
-	std::ofstream myfile ("submission.csv", std::ofstream::trunc);
+	std::ofstream myfile ("outBayes.csvt", std::ofstream::trunc);
 	if (!myfile) {
 		fprintf(stderr,"error al abrir \n");
 	}
 
-	myfile << "\"id\",\"sentiment\"";
-	myfile << "\n";
+	// myfile << "\"id\",\"sentiment\"";
+	//myfile << "\n";
 	std::vector<std::string> ids = myBayes.ids;
 		for (unsigned int i = 0; i < ids.size(); i++){
 		myfile << ids[i];

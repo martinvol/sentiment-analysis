@@ -19,11 +19,11 @@
 #define JUMPER false
 #define BOOSTING true
 
-//#define LABELED "labeledTrainData.tsv"
-#define LABELED "piping_75k.csv"
+#define LABELED "labeledTrainData.tsv"
+//#define LABELED "piping_75k.csv"
 
-//#define UNLABELED "Data/unlabeledTrainData.tsv"
-#define UNLABELED "testData.tsv"
+#define UNLABELED "Data/unlabeledTrainData.tsv"
+//#define UNLABELED "testData.tsv"
 
 /*#define LABELED "labeledTrainDataStemmedAndLemmalitized.tsv"
 #define UNLABELED "testDataStemmedAndLemmalitized.tsv"*/
@@ -63,10 +63,10 @@ Bayes::Bayes(){
 		//printf("%f\n", proba);
 		int tag;
 		bool procesar =  false;
-		if (proba > 0.6){
+		if (proba > 0.9){
 			tag = 1;
 			procesar = true;
-		} else if (proba < 0.4){
+		} else if (proba < 0.1){
 			tag = 0;
 			procesar = true;
 		}
@@ -85,7 +85,7 @@ Bayes::Bayes(){
 
 		bool termine = false;
 		int pasadas = 0;
-		while (!termine && pasadas < 10){
+		while (!termine && pasadas < 6){
 			termine = true;
 			std::ifstream input(LABELED);
 			if (!input) {
@@ -97,10 +97,10 @@ Bayes::Bayes(){
 				float proba = std::stof((*it)[1], NULL);
 				int tag;
 				bool procesar =  false;
-				if (proba > 0.6){
+				if (proba > 0.9){
 					tag = 1;
 					procesar = true;
-				} else if (proba < 0.4){
+				} else if (proba < 0.1){
 					tag = 0;
 					procesar = true;
 				}

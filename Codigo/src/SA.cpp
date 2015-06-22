@@ -49,10 +49,10 @@ int main() {
 	//printf("%lu\n", sizeof(a));
 	//std::cout << a/b << std::endl;
 
-    bool producir_piping = true;
+    bool producir_piping = false;
 	int dimension = pow(2,26);
 	float rate = 0.1;
-	int pasadas = 1;
+	int pasadas = 60;
 	int errores = 0;
 	bool bigramas = true;
 	bool trigramas = true;
