@@ -19,7 +19,7 @@
 
 typedef std::vector<std::vector<std::string> > Rows;
 
-Perceptron::Perceptron(int dimension, float learning_rate, int numero_pasadas, int nro_errores, bool bigrams,bool trigrams) {
+Perceptron::Perceptron(int dimension, float learning_rate, int numero_pasadas, int nro_errores, bool bigrams,bool trigrams, bool bayes) {
 	pesos.resize(dimension);
 	std::fill(pesos.begin(), pesos.end(), 0);
 	// pesos.shrink_to_fit();
@@ -29,7 +29,7 @@ Perceptron::Perceptron(int dimension, float learning_rate, int numero_pasadas, i
 	tolerancia = nro_errores;
 	bigramas = bigrams;
 	trigramas = trigrams;
-
+	this->bayes = bayes;
 }
 
 Perceptron::~Perceptron() {
@@ -37,12 +37,22 @@ Perceptron::~Perceptron() {
 }
 
 void Perceptron::Entrenar(){
+	char path[100];
+	if (bayes){
+		strcpy(path, "outBayes.csv");
+	} else{
+		strcpy(path, "labeledTrainData.tsv");
+	}
 
+	printf("Using file %s\n", path);
 	//Iteraciones de entrenamiento
 	for (int i = 0; i <= pasadas; i++ ){
 		int errores = 0;
 		Rows rows;
-		std::ifstream input("outBayes.csv");
+
+		
+		std::ifstream input(path);
+
 		if (!input) {
 			std::cout << "unable to load file" << std::endl;
 		}

@@ -4,15 +4,31 @@ VG=valgrind
 VFLAGS=--leak-check=full --show-reachable=yes
 BOSTFLAGS =  -lboost_system -lboost_regex
 
-tp: compilar compilar_bayes
-	./ejecutableB
+tp: compilar compilar_bayes combiner
+	
+	./ejecutableB -u # Bayes usa los unlabeled
 	rm -f outBayes.csv
 	touch outBayes.csv
 	cat labeledTrainData.tsv >> outBayes.csv
 	cat outBayes.csvt >> outBayes.csv
 	rm outBayes.csvt
-	./ejecutable
+	./ejecutable -b # le pasamos esa salida a bayes + los 25K de kaggle
 
+	./ejecutable # tron solo con train Data
+
+	./ejecutableB # ejecutable solo con la data de Kaggle
+
+	# touch temp
+	# echo '"id","sentiment"' > temp
+	# cat OnlyBayes.csv >> temp
+	# mv temp OnlyBayes.csv
+
+
+
+	./boosting 
+
+combiner:
+	$(CC) "src/combiner.cpp" -o boosting $(CFLAGS)
 
 main.o: src/SA.cpp Perceptron.o
 	$(CC) "src/SA.cpp" -c $(CFLAGS)
@@ -40,3 +56,6 @@ clean:
 	find . -name "*~" -type f -delete
 	find . -name "a.out" -type f -delete
 	find . -name "main" -type f -delete
+	rm -f boosting
+	rm -f ejecutable
+	rm -f ejecutableB

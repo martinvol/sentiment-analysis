@@ -21,10 +21,11 @@ private:
 	int tolerancia;
 	bool bigramas;
 	bool trigramas;
+	bool bayes;
 
 
 public:
-	Perceptron(int dimension, float learning_rate, int numero_pasadas, int nro_errores,bool bigrams,bool trigrams);
+	Perceptron(int dimension, float learning_rate, int numero_pasadas, int nro_errores,bool bigrams,bool trigrams, bool bayes);
 	virtual ~Perceptron();
 
 	void Entrenar();

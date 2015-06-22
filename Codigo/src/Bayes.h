@@ -18,7 +18,7 @@ private:
 
 public:
 
-	Bayes();
+	Bayes(bool unlabeled);
 
 	virtual ~Bayes();
 
@@ -41,6 +41,7 @@ public:
 	std::vector<long double>* Predicciones();
 
 	Rows rows;
+	bool unlabeled;
 
 };
 

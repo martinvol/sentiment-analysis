@@ -17,60 +17,45 @@
 #include <iomanip>
 #include <limits>
 
-int main() {
-/*
-	std::cout.precision(190);
 
-
-	int dimension = pow(2,28.5);
-	fprintf(stderr,"%d",dimension);
-	float rate = 0.1;
-	int pasadas = 80;
-	int errores = 0;
-	bool bigramas = true;
-	Perceptron miPerceptron(dimension, rate, pasadas, errores, bigramas);
-	miPerceptron.Entrenar();
+int main(int argc, char const *argv[]) {
+	char path[100];
+	bool unlabeled;
+	if (argc == 2){
+		unlabeled = true;
+		strcpy(path, "outBayes.csvt");
+	} else {
+		unlabeled = false;
+		strcpy(path, "OnlyBayes.csv");
+	}
 	
-	std::vector<long double> preds = miPerceptron.Predicciones();
-	std::ofstream myfile ("submission.csv", std::ofstream::trunc);
+
+	Bayes myBayes(unlabeled);
+	puts("Terminé de aprender");
+	std::vector<long double>* preds = myBayes.Predicciones();
+	puts("Terminé de labelear");
+
+	std::ofstream myfile (path, std::ofstream::trunc);
 	if (!myfile) {
 		fprintf(stderr,"error al abrir \n");
 	}
 
 	myfile << "\"id\",\"sentiment\"";
 	myfile << "\n";
-	std::vector<std::string> ids = miPerceptron.ObtenerIds();
-	for (int i = 0; i < 25000; i++){
-		myfile << ids[i];
-		myfile << ",";
-		myfile << std::fixed << std::setprecision(53) << preds[i];
-		myfile << "\n";
-		//std::cout << std::fixed << std::cout.precision(190) << preds[i] << std::endl;
-	}
 
-	myfile.close();
-
-	Bayes miBayes;*/
-
-	Bayes myBayes;
-	puts("Terminé de aprender");
-	std::vector<long double>* preds = myBayes.Predicciones();
-	puts("Terminé de labelear");
-
-	std::ofstream myfile ("outBayes.csvt", std::ofstream::trunc);
-	if (!myfile) {
-		fprintf(stderr,"error al abrir \n");
-	}
-
-	// myfile << "\"id\",\"sentiment\"";
-	//myfile << "\n";
 	std::vector<std::string> ids = myBayes.ids;
 		for (unsigned int i = 0; i < ids.size(); i++){
 		myfile << ids[i];
-		myfile << "\t";
+		if (unlabeled){
+			myfile << "\t";
+		} else {
+			myfile << ",";
+		}
 		myfile << std::fixed << std::setprecision(53) << (*preds)[i];
-		myfile << "\t";
-		myfile << myBayes.rows[i][1];
+		if (unlabeled){
+			myfile << "\t";
+			myfile << myBayes.rows[i][1];
+		}
 		myfile << "\n";
 		//std::cout << std::fixed << std::cout.precision(190) << preds[i] << std::endl;
 	}

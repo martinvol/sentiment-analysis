@@ -22,24 +22,15 @@
 #define LABELED "labeledTrainData.tsv"
 //#define LABELED "piping_75k.csv"
 
-#define UNLABELED "Data/unlabeledTrainData.tsv"
+//#define UNLABELED "Data/unlabeledTrainData.tsv"
 //#define UNLABELED "testData.tsv"
 
 /*#define LABELED "labeledTrainDataStemmedAndLemmalitized.tsv"
 #define UNLABELED "testDataStemmedAndLemmalitized.tsv"*/
 
-/*
-bool check_positive_negative(review, data){
-    total = 0
-    for w in review.split():
-        proba =  float((*data)[w][0])/(float((*data)[w][0]) + float((*data)[w][1]))
-        total += proba
-    return 1 if total/float(len(review.split())) >= 0.5 else 0
-}*/
 
-
-
-Bayes::Bayes(){
+Bayes::Bayes(bool unlabeled){
+	this->unlabeled = unlabeled;
 	Rows rows;
 	char const row_delim = '\n';
 	char const field_delim = '\t';
@@ -59,25 +50,15 @@ Bayes::Bayes(){
 		}
 	}
 	for (std::vector<std::vector<std::string> >::iterator it = rows.begin(); it !=rows.end(); ++it){
-		float proba = std::stof((*it)[1], NULL);
+		int tag = std::stoi((*it)[1]);
 		//printf("%f\n", proba);
-		int tag;
-		bool procesar =  false;
-		if (proba > 0.9){
-			tag = 1;
-			procesar = true;
-		} else if (proba < 0.1){
-			tag = 0;
-			procesar = true;
-		}
+	
+		std::string text = (*it)[2];
+	
+		boost::regex regex("\\w+");
+		boost::sregex_token_iterator iter(text.begin(), text.end(), regex, 0);
+		aprender(tag, iter);
 
-		if (procesar){
-			std::string text = (*it)[2];
-		
-			boost::regex regex("\\w+");
-			boost::sregex_token_iterator iter(text.begin(), text.end(), regex, 0);
-			aprender(tag, iter);
-		}
 	}
 
 	if (BOOSTING){
@@ -94,32 +75,21 @@ Bayes::Bayes(){
 
 			int errores = 0;
 			for (std::vector<std::vector<std::string> >::iterator it = rows.begin(); it !=rows.end(); ++it){
-				float proba = std::stof((*it)[1], NULL);
-				int tag;
-				bool procesar =  false;
-				if (proba > 0.9){
-					tag = 1;
-					procesar = true;
-				} else if (proba < 0.1){
-					tag = 0;
-					procesar = true;
-				}
+				int tag = std::stoi((*it)[1]);
 				//int tag = std::stoi((*it)[1]);
-				if (procesar){
-					std::string text = (*it)[2];
+				std::string text = (*it)[2];
 
-					boost::regex regex("\\w+");
-					boost::sregex_token_iterator iter(text.begin(), text.end(), regex, 0);
-					float first_try = evaluar(iter);
-					if ((first_try > 0.5) != tag && (first_try != 0.5)){
-						errores++;
-						while ((evaluar(iter) > 0.5) != tag){
-							//printf("evaluar %Le\n", evaluar(iter) );
-							termine = false;
-							boost::regex regex("\\w+");
-							boost::sregex_token_iterator iter2(text.begin(), text.end(), regex, 0);
-							aprender(tag, iter2);
-						}
+				boost::regex regex("\\w+");
+				boost::sregex_token_iterator iter(text.begin(), text.end(), regex, 0);
+				float first_try = evaluar(iter);
+				if ((first_try > 0.5) != tag /*&& (first_try != 0.5)*/){
+					errores++;
+					while ((evaluar(iter) > 0.5) != tag){
+						//printf("evaluar %Le\n", evaluar(iter) );
+						termine = false;
+						boost::regex regex("\\w+");
+						boost::sregex_token_iterator iter2(text.begin(), text.end(), regex, 0);
+						aprender(tag, iter2);
 					}
 				}
 			}
@@ -337,7 +307,14 @@ long double Bayes::evaluar (boost::sregex_token_iterator iter){
 
 std::vector<long double>* Bayes::Predicciones(){
 	long double max=0, min=1;
-	std::ifstream input(UNLABELED);
+	char path[100];
+	if (unlabeled){
+		strcpy(path, "Data/unlabeledTrainData.tsv");
+	} else {
+		strcpy(path, "testData.tsv");
+	}
+	printf("Using file %s\n", path);
+	std::ifstream input(path);
 	if (!input) {
 		std::cout << "unable to load file" << std::endl;
 	}
@@ -373,9 +350,12 @@ std::vector<long double>* Bayes::Predicciones(){
 		//pred->push_back();
 
 	}
-	for (std::vector<long double >::iterator it = pred->begin(); it !=pred->end(); ++it){
-		(*it) = (((*it) - min) / (max - min));
-	}
+	/*if (unlabeled){
+		for (std::vector<long double >::iterator it = pred->begin(); it !=pred->end(); ++it){
+			(*it) = (((*it) - min) / (max - min));
+		}
+	}*/
+	
 	input.close();
 	return pred;
 }
